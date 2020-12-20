@@ -1,4 +1,4 @@
-import rule
+from pypargen import rule
 
 
 def test_str_rule():
