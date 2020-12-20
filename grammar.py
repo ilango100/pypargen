@@ -8,6 +8,7 @@ class Grammar(list[Rule]):
     def __init__(self, iterable=(), start=None):
         super().__init__([Rule(*x) for x in iterable])
         self._start = start
+        self._firsts = {}
 
     @property
     def start(self) -> str:
@@ -28,5 +29,43 @@ class Grammar(list[Rule]):
     def nonterminals(self) -> set[str]:
         return set([x for x, _ in self])
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '\n'.join(map(str, self))
+
+    def first(self, tokens: list[str]) -> set[str]:
+        if (tt := tuple(tokens)) in self._firsts:
+            return self._firsts[tt]
+
+        firsts = set()
+        if tokens[0].startswith('"'):
+            firsts.add(tokens[0])
+            return firsts
+
+        if tokens[0] == '$':
+            firsts.add('$')
+            return firsts
+
+        for token in tokens:
+            new_firsts = set()
+            for lhs, rhs in self:
+                if token == lhs:
+                    if not rhs:
+                        new_firsts.add('ϵ')
+                        continue
+
+                    # Avoid infinite recursion
+                    if lhs != rhs[0]:
+                        new_firsts = new_firsts.union(self.first(rhs))
+            firsts = firsts.union(new_firsts)
+            if 'ϵ' in firsts:
+                firsts.remove('ϵ')
+                continue
+            break
+        else:
+            if 'ϵ' in new_firsts:
+                firsts.add('ϵ')
+
+        # Memoization
+        self._firsts[tuple(tokens)] = firsts
+
+        return firsts
