@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from grammar import Grammar
+from pypargen.grammar import Grammar
 
 
 class Item:

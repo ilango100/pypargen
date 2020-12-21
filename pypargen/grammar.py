@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from rule import Rule
+from pypargen.rule import Rule
 
 
 class Grammar(list[Rule]):
@@ -54,6 +54,7 @@ class Grammar(list[Rule]):
                         continue
 
                     # Avoid infinite recursion
+                    # NOTE: Only first RHS token verified
                     if lhs != rhs[0]:
                         new_firsts = new_firsts.union(self.first(rhs))
             firsts = firsts.union(new_firsts)
