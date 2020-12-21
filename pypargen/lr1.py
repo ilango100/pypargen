@@ -44,11 +44,14 @@ class LR1Grammar(Grammar):
             for item in closure_items:
                 if item.done:
                     continue
+                if item.rhs[item.pos].startswith('"'):
+                    continue
                 for lhs, rhs in self:
                     if item.rhs[item.pos] == lhs:
                         for la in self.first(item.rhs[item.pos + 1:] +
                                              [item.lookahead]):
-                            new_items.add(Item(lhs, rhs, 0, la))
+                            if la != 'ϵ':
+                                new_items.add(Item(lhs, rhs, 0, la))
             if closure_items.issuperset(new_items):
                 break
             else:
