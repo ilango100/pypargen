@@ -1,4 +1,14 @@
+# Copyright 2021 Ilango Rajagopal
+# Licensed under GPL-3.0-only
+
+import pytest
 from pypargen import grammar
+
+
+def test_empty_grammar():
+    empty = grammar.Grammar()
+    with pytest.raises(AssertionError):
+        empty.start
 
 
 def test_palindrome():
