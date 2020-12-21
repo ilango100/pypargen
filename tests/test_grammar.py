@@ -41,3 +41,12 @@ def test_math():
     assert math.first(["mul"]) == {'"[1-9][0-9]*"', r'"\("'}
     assert math.first(["div"]) == {'"[1-9][0-9]*"', r'"\("'}
     assert math.first(["atom"]) == {'"[1-9][0-9]*"', r'"\("'}
+
+
+def test_eps_first():
+    rules = [('a', []), ('b', []), ('c', ['a', 'b', '"a"'])]
+    grm = grammar.Grammar(rules)
+
+    assert grm.first(['a']) == set(['ϵ'])
+    assert grm.first(['b']) == set(['ϵ'])
+    assert grm.first(['c']) == set(['"a"'])

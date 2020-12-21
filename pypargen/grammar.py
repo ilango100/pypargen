@@ -46,6 +46,10 @@ class Grammar(list[Rule]):
             return firsts
 
         for token in tokens:
+            if token.startswith('"'):
+                firsts.add(token)
+                break
+
             new_firsts = set()
             for lhs, rhs in self:
                 if token == lhs:
