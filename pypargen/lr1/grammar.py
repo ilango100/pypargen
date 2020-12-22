@@ -3,7 +3,7 @@
 
 from typing import Union
 
-from pypargen.grammar import Grammar
+from pypargen.grammar import Grammar as BaseGrammar
 from pypargen.rule import Rule
 
 
@@ -55,7 +55,7 @@ class ReduceReduceConflict(Exception):
         super().__init__(f"Reduce/Reduce Conflict:\n{msg}")
 
 
-class Grammar(Grammar):
+class Grammar(BaseGrammar):
     def closure(self, items: set[Item]) -> set[Item]:
         closure_items = items.copy()
         new_items = set()
