@@ -9,6 +9,8 @@ class Token(NamedTuple):
     content: any
 
     def __str__(self):
+        if self.type.startswith('"'):
+            return f"{self.type}(\"{self.content}\")"
         return f"{self.type}({self.content})"
 
     def __repr__(self):
