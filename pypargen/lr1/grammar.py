@@ -39,7 +39,7 @@ class Item:
 
 
 class ShiftReduceConflict(Exception):
-    def __init__(self, grm: "LR1Grammar", items: set[Item], lookahead: str):
+    def __init__(self, grm: "Grammar", items: set[Item], lookahead: str):
         conflicts = [item for item in items if grm.goto([item], lookahead)]
         conflicts += [
             item for item in items if item.done and item.lookahead == lookahead
@@ -55,7 +55,7 @@ class ReduceReduceConflict(Exception):
         super().__init__(f"Reduce/Reduce Conflict:\n{msg}")
 
 
-class LR1Grammar(Grammar):
+class Grammar(Grammar):
     def closure(self, items: set[Item]) -> set[Item]:
         closure_items = items.copy()
         new_items = set()
