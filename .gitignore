@@ -138,6 +138,9 @@ dmypy.json
 # profiling data
 .prof
 
+# Python environments
+env*/
+
 ### Vim ###
 # Swap
 [._]*.s[a-v][a-z]
