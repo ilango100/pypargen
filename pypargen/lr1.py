@@ -19,7 +19,7 @@ class Item:
     def done(self) -> bool:
         return self.pos >= len(self.rhs)
 
-    def __eq__(self, other: 'Item') -> bool:
+    def __eq__(self, other: "Item") -> bool:
         return self.lhs == other.lhs and self.rhs == other.rhs and \
                 self.pos == other.pos and self.lookahead == other.lookahead
 
@@ -34,12 +34,12 @@ class Item:
     def __repr__(self) -> str:
         return f"<{self.__str__()}>"
 
-    def copy(self) -> 'Item':
+    def copy(self) -> "Item":
         return Item(self.lhs, self.rhs.copy(), self.pos, self.lookahead)
 
 
 class ShiftReduceConflict(Exception):
-    def __init__(self, grm: 'LR1Grammar', items: set[Item], lookahead: str):
+    def __init__(self, grm: "LR1Grammar", items: set[Item], lookahead: str):
         conflicts = [item for item in items if grm.goto([item], lookahead)]
         conflicts += [
             item for item in items if item.done and item.lookahead == lookahead
@@ -134,7 +134,7 @@ class LR1Grammar(Grammar):
                         rule2 = Rule(item.lhs, item.rhs)
                         raise ReduceReduceConflict(rule1, rule2)
 
-                    if item.lhs == '__root__':
+                    if item.lhs == "__root__":
                         table[idx][item.lookahead] = 'c'
                         continue
                     table[idx][item.lookahead] = \

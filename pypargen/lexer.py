@@ -32,7 +32,7 @@ class Lexer:
 
         # Read the whole input (No other way to use re)
         self.str = inpt.read()
-        if hasattr(self.str, 'decode'):
+        if hasattr(self.str, "decode"):
             self.str = self.str.decode()
         self.pos = 0
         self.stopped = False
