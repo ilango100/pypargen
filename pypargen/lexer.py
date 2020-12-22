@@ -8,11 +8,17 @@ from pypargen.token import Token
 
 
 class InvalidCharacter(Exception):
-    def __init__(self, pos, char):
+    def __init__(self, char: str, pos: int):
         self.pos = pos
         self.char = char
         super().__init__(
             f"Invalid character '{self.char}' at position {self.pos}")
+
+
+class InvalidActiveTerminal(Exception):
+    def __init__(self, terminals: set[str]):
+        self.terminals = terminals
+        super().__init__(f"Invalid terminal(s): {self.terminals}")
 
 
 class Lexer:
@@ -20,8 +26,9 @@ class Lexer:
         assert all([x.startswith('"') for x in terminals]), \
                 "All terminals must start with a \""
 
-        self.terminals = terminals
-        self.patterns = {patt: re.compile(patt[1:-1]) for patt in terminals}
+        self._all_terminals = terminals
+        self._terminals = terminals
+        self._patterns = {patt: re.compile(patt[1:-1]) for patt in terminals}
 
         # Read the whole input (No other way to use re)
         self.str = input.read()
@@ -29,6 +36,16 @@ class Lexer:
             self.str = self.str.decode()
         self.pos = 0
         self.stopped = False
+
+    @property
+    def terminals(self):
+        return self._terminals
+
+    @terminals.setter
+    def terminals(self, terminals: list[str]):
+        if (invalid_terms := set(terminals).difference(self._all_terminals)):
+            raise InvalidActiveTerminal(invalid_terms)
+        self._terminals = terminals
 
     def __iter__(self):
         return self
@@ -44,9 +61,9 @@ class Lexer:
 
         # Check for active patterns
         # Changing self.terminals changes "active" terminals to look for
-        for patt in self.terminals:
-            if (match := self.patterns[patt].match(self.str, self.pos)):
+        for patt in self._terminals:
+            if (match := self._patterns[patt].match(self.str, self.pos)):
                 term = match.group(0)
                 self.pos += len(term)
                 return Token(patt, term)
-        raise InvalidCharacter(self.pos, self.str[self.pos])
+        raise InvalidCharacter(self.str[self.pos], self.pos)

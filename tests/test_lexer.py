@@ -11,6 +11,7 @@ def test_lexer():
     input = "aabb"
     inputbuf = io.StringIO(input)
     lexer1 = lexer.Lexer(terminals, inputbuf)
+    assert lexer1.terminals == terminals
 
     tokens = list(lexer1)
 
@@ -28,6 +29,7 @@ def test_math():
     input = "(1+2)/(4-1)"
     inputbuf = io.BytesIO(input.encode())
     lexer1 = lexer.Lexer(terminals, inputbuf)
+    assert lexer1.terminals == terminals
 
     tokens = list(lexer1)
 
@@ -44,5 +46,47 @@ def test_invalid():
     input = "aabxab"
     inputbuf = io.StringIO(input)
     lexer1 = lexer.Lexer(terminals, inputbuf)
+    assert lexer1.terminals == terminals
 
     list(lexer1)
+
+
+def test_active():
+    terminals = ['"[a-z]"', '"[A-Za-z]"']
+    input = "abcAbc"
+    inputbuf = io.StringIO(input)
+    lexer1 = lexer.Lexer(terminals, inputbuf)
+
+    for i, tok in enumerate(lexer1):
+        if tok.type == '$':
+            continue
+        if i >= 3:
+            if i == 3:
+                lexer1.terminals = terminals[1:]
+            assert lexer1.terminals == terminals[1:]
+            assert tok.type == terminals[1]
+            assert tok.content == input[i]
+        else:
+            assert tok.type == terminals[0]
+            assert tok.content == input[i]
+
+
+@pytest.mark.xfail(strict=True, raises=lexer.InvalidActiveTerminal)
+def test_active_invalid():
+    terminals = ['"[a-z]"', '"[A-Za-z]"']
+    input = "abcABC"
+    inputbuf = io.StringIO(input)
+    lexer1 = lexer.Lexer(terminals, inputbuf)
+
+    for i, tok in enumerate(lexer1):
+        if tok.type == '$':
+            raise RuntimeError("Should not reach here")
+        if i >= 3:
+            if i == 3:
+                lexer1.terminals = ['"[A-Z]"']
+            assert lexer1.terminals != ['"[A-Z]"']
+            assert tok.type == terminals[1]
+            assert tok.content == input[i]
+        else:
+            assert tok.type == terminals[0]
+            assert tok.content == input[i]
