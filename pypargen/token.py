@@ -15,3 +15,6 @@ class Token(NamedTuple):
 
     def __repr__(self):
         return f"<{self.__str__()}>"
+
+    def __bool__(self):
+        return bool(self.type)
