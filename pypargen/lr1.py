@@ -91,7 +91,7 @@ class LR1Grammar(Grammar):
         return self.closure(goto)
 
     def parse_table(self) -> list[dict[str, Union[int, str]]]:
-        init_item = Item("__root__", [self.start, '$'], 0, '$')
+        init_item = Item("__root__", [self.start], 0, '$')
         set_of_items = [self.closure(set([init_item]))]
 
         table = [{}]
@@ -136,7 +136,10 @@ class LR1Grammar(Grammar):
                             rule2 = Rule(item.lhs, item.rhs)
                             raise ReduceReduceConflict(rule1, rule2)
 
-                    table[idx][item.lookahead] = \
-                        f"r{self.index((item.lhs, item.rhs))}"
+                    if item.lhs == '__root__':
+                        table[idx][item.lookahead] = 'c'
+                    else:
+                        table[idx][item.lookahead] = \
+                            f"r{self.index((item.lhs, item.rhs))}"
 
         return table
