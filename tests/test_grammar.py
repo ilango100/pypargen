@@ -5,10 +5,10 @@ import pytest
 from pypargen import grammar
 
 
+@pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_empty_grammar():
     empty = grammar.Grammar()
-    with pytest.raises(AssertionError):
-        empty.start
+    empty.start
 
 
 def test_palindrome():
@@ -50,3 +50,15 @@ def test_eps_first():
     assert grm.first(['a']) == set(['ϵ'])
     assert grm.first(['b']) == set(['ϵ'])
     assert grm.first(['c']) == set(['"a"'])
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError)
+def test_reserved():
+    grammar.Grammar([('__root__', ['"a"', 'S', '"a"']),
+                     ('__root__', ['"b"', 'S', '"b"']), ('__root__', ['"c"'])])
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError)
+def test_invalid_start():
+    grammar.Grammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"', 'S', '"b"']),
+                     ('S', [])], 'T')

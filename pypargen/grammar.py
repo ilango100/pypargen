@@ -7,6 +7,11 @@ from pypargen.rule import Rule
 class Grammar(list[Rule]):
     def __init__(self, iterable=(), start=None):
         super().__init__([Rule(*x) for x in iterable])
+        assert "__root__" not in self.nonterminals, \
+            "__root__ is a reserved nonterminal"
+        if start:
+            assert start in self.nonterminals,\
+                    "Start symbol must be valid nonterminal"
         self._start = start
         self._firsts = {}
 
