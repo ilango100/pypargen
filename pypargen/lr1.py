@@ -1,6 +1,8 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
+from typing import Union
+
 from pypargen.grammar import Grammar
 from pypargen.rule import Rule
 
@@ -88,7 +90,7 @@ class LR1Grammar(Grammar):
                 goto.add(gitem)
         return self.closure(goto)
 
-    def parse_table(self):
+    def parse_table(self) -> list[dict[str, Union[int, str]]]:
         init_item = Item("__root__", [self.start, '$'], 0, '$')
         set_of_items = [self.closure(set([init_item]))]
 
