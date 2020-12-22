@@ -19,9 +19,8 @@ class Grammar(list[Rule]):
     def start(self) -> str:
         if self._start:
             return self._start
-        else:
-            assert len(self) >= 1, "No rules added to the grammar yet"
-            return self[0].lhs
+        assert len(self) >= 1, "No rules added to the grammar yet"
+        return self[0].lhs
 
     @property
     def terminals(self) -> set[str]:
@@ -32,14 +31,14 @@ class Grammar(list[Rule]):
 
     @property
     def nonterminals(self) -> set[str]:
-        return set([x for x, _ in self])
+        return {x for x, _ in self}
 
     def __str__(self) -> str:
         return '\n'.join(map(str, self))
 
     def first(self, tokens: list[str]) -> set[str]:
-        if (tt := tuple(tokens)) in self._firsts:
-            return self._firsts[tt]
+        if (ttokens := tuple(tokens)) in self._firsts:
+            return self._firsts[ttokens]
 
         firsts = set()
         if tokens[0].startswith('"'):

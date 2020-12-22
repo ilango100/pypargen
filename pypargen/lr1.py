@@ -9,7 +9,7 @@ from pypargen.rule import Rule
 
 class Item:
     def __init__(self, lhs: str, rhs: list[str], pos: int, lookahead: str):
-        assert pos >= 0 and pos <= len(rhs), "Dot position out of range"
+        assert 0 <= pos <= len(rhs), "Dot position out of range"
         self.lhs = lhs
         self.rhs = rhs
         self.pos = pos
@@ -67,15 +67,14 @@ class LR1Grammar(Grammar):
                     continue
                 for lhs, rhs in self:
                     if item.rhs[item.pos] == lhs:
-                        for la in self.first(item.rhs[item.pos + 1:] +
-                                             [item.lookahead]):
-                            if la != 'ϵ':
-                                new_items.add(Item(lhs, rhs, 0, la))
+                        for lookahead in self.first(item.rhs[item.pos + 1:] +
+                                                    [item.lookahead]):
+                            if lookahead != 'ϵ':
+                                new_items.add(Item(lhs, rhs, 0, lookahead))
             if closure_items.issuperset(new_items):
                 break
-            else:
-                closure_items = closure_items.union(new_items)
-                new_items = set()
+            closure_items = closure_items.union(new_items)
+            new_items = set()
         return closure_items
 
     def goto(self, items: set[Item], token: str) -> set[Item]:
@@ -102,7 +101,7 @@ class LR1Grammar(Grammar):
             added = False
             for idx, items in enumerate(set_of_items):
                 for sym in self.terminals.union(self.nonterminals):
-                    if (gitems := self.goto(items, sym)):
+                    if gitems := self.goto(items, sym):
                         if gitems not in set_of_items:
                             set_of_items.append(gitems)
                             table.append({})
@@ -117,8 +116,8 @@ class LR1Grammar(Grammar):
         for idx, state in enumerate(table):
             for sym in self.terminals.union(self.nonterminals):
                 if sym not in table[idx]:
-                    if (gitems := self.goto(set_of_items[idx], sym)):
-                        table[idx][sym] = set_of_items.index(gitems)
+                    if gitems := self.goto(set_of_items[idx], sym):
+                        state[sym] = set_of_items.index(gitems)
 
         # Fill the reduction entries
         for idx, items in enumerate(set_of_items):
@@ -126,20 +125,19 @@ class LR1Grammar(Grammar):
                 if item.done:
 
                     # If conflict, raise proper error
-                    if (conflict := table[idx].get(item.lookahead, None)):
+                    if conflict := table[idx].get(item.lookahead, None):
                         if isinstance(conflict, int):
                             raise ShiftReduceConflict(self, items,
                                                       item.lookahead)
 
-                        else:
-                            rule1 = self[int(conflict[1:])]
-                            rule2 = Rule(item.lhs, item.rhs)
-                            raise ReduceReduceConflict(rule1, rule2)
+                        rule1 = self[int(conflict[1:])]
+                        rule2 = Rule(item.lhs, item.rhs)
+                        raise ReduceReduceConflict(rule1, rule2)
 
                     if item.lhs == '__root__':
                         table[idx][item.lookahead] = 'c'
-                    else:
-                        table[idx][item.lookahead] = \
-                            f"r{self.index((item.lhs, item.rhs))}"
+                        continue
+                    table[idx][item.lookahead] = \
+                        f"r{self.index((item.lhs, item.rhs))}"
 
         return table

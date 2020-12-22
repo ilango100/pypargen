@@ -22,7 +22,7 @@ class InvalidActiveTerminal(Exception):
 
 
 class Lexer:
-    def __init__(self, terminals: list[str], input: io.RawIOBase):
+    def __init__(self, terminals: list[str], inpt: io.RawIOBase):
         assert all([x.startswith('"') for x in terminals]), \
                 "All terminals must start with a \""
 
@@ -31,7 +31,7 @@ class Lexer:
         self._patterns = {patt: re.compile(patt[1:-1]) for patt in terminals}
 
         # Read the whole input (No other way to use re)
-        self.str = input.read()
+        self.str = inpt.read()
         if hasattr(self.str, 'decode'):
             self.str = self.str.decode()
         self.pos = 0
@@ -43,7 +43,7 @@ class Lexer:
 
     @terminals.setter
     def terminals(self, terminals: list[str]):
-        if (invalid_terms := set(terminals).difference(self._all_terminals)):
+        if invalid_terms := set(terminals).difference(self._all_terminals):
             raise InvalidActiveTerminal(invalid_terms)
         self._terminals = terminals
 
@@ -62,7 +62,7 @@ class Lexer:
         # Check for active patterns
         # Changing self.terminals changes "active" terminals to look for
         for patt in self._terminals:
-            if (match := self._patterns[patt].match(self.str, self.pos)):
+            if match := self._patterns[patt].match(self.str, self.pos):
                 term = match.group(0)
                 self.pos += len(term)
                 return Token(patt, term)
