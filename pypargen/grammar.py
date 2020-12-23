@@ -40,7 +40,7 @@ class Grammar(list[Rule]):
         return {x for x, _ in self}
 
     def __str__(self) -> str:
-        return '\n'.join(map(str, self))
+        return '\n'.join(map(str, self)) + '\n'
 
     def first(self, tokens: list[str]) -> set[str]:
         if (ttokens := tuple(tokens)) in self._firsts:

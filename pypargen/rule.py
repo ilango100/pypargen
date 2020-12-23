@@ -12,7 +12,7 @@ class Rule(NamedTuple):
         return hash((self.lhs, tuple(self.rhs)))
 
     def __str__(self) -> str:
-        return " -> ".join([self.lhs, ' '.join(self.rhs) if self.rhs else 'ϵ'])
+        return "\t-> ".join([self.lhs, ' '.join(self.rhs) if self.rhs else 'ϵ'])
 
     def __repr__(self) -> str:
         return f"<{self.__str__()}>"

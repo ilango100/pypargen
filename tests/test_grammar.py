@@ -18,9 +18,10 @@ def test_palindrome():
     assert palindrome.terminals == {'"a"', '"b"'}
     assert palindrome.nonterminals == {'S'}
     assert palindrome.first(['S']) == {'"a"', '"b"', 'ϵ'}
-    assert str(palindrome) == """S -> "a" S "a"
-S -> "b" S "b"
-S -> ϵ"""
+    assert str(palindrome) == """S\t-> "a" S "a"
+S\t-> "b" S "b"
+S\t-> ϵ
+"""
 
 
 def test_math():
