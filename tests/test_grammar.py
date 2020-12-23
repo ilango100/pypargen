@@ -46,6 +46,7 @@ def test_math():
 def test_eps_first():
     rules = [('a', []), ('b', []), ('c', ['a', 'b', '"a"'])]
     grm = grammar.Grammar(rules)
+    grm.start = 'c'
 
     assert grm.first(['a']) == set(['ϵ'])
     assert grm.first(['b']) == set(['ϵ'])
@@ -62,3 +63,11 @@ def test_reserved():
 def test_invalid_start():
     grammar.Grammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"', 'S', '"b"']),
                      ('S', [])], 'T')
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError)
+def test_invalid_start_set():
+    g = grammar.Grammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"',
+                                                            'S', '"b"']),
+                         ('S', [])])
+    g.start = 'T'

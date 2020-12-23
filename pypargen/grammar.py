@@ -22,6 +22,12 @@ class Grammar(list[Rule]):
         assert len(self) >= 1, "No rules added to the grammar yet"
         return self[0].lhs
 
+    @start.setter
+    def start(self, start: str):
+        assert start in self.nonterminals,\
+                "Start symbol must be a valid nonterminal"
+        self._start = start
+
     @property
     def terminals(self) -> set[str]:
         terms = set()
