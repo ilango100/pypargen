@@ -78,3 +78,6 @@ class Grammar(list[Rule]):
         self._firsts[tuple(tokens)] = firsts
 
         return firsts
+
+
+__all__ = ["Grammar"]

@@ -18,3 +18,6 @@ class Token(NamedTuple):
 
     def __bool__(self):
         return bool(self.type)
+
+
+__all__ = ["Token"]

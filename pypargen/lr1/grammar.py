@@ -141,3 +141,6 @@ class Grammar(BaseGrammar):
                         f"r{self.index((item.lhs, item.rhs))}"
 
         return table
+
+
+__all__ = ["Grammar"]

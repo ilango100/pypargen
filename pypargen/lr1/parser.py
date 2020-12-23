@@ -61,3 +61,6 @@ class Parser:
             # Goto
             nxt = self.table[self.states[-1]][rule.lhs]
             self.states.append(nxt)
+
+
+__all__ = ["Parser"]

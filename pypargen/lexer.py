@@ -67,3 +67,6 @@ class Lexer:
                 self.pos += len(term)
                 return Token(patt, term)
         raise InvalidCharacter(self.str[self.pos], self.pos)
+
+
+__all__ = ["Lexer"]
