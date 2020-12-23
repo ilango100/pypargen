@@ -9,3 +9,6 @@ author = "Ilango Rajagopal"
 author-email = "ilangokul@gmail.com"
 home-page = "https://github.com/ilango100/pypargen"
 classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+
+[tool.flit.metadata.requires-extra]
+test = ['pytest', 'pytest-cov']
