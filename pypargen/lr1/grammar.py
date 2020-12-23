@@ -112,13 +112,6 @@ class Grammar(BaseGrammar):
             if not added:
                 break
 
-        # Complete filling the goto entries
-        for idx, state in enumerate(table):
-            for sym in self.terminals.union(self.nonterminals):
-                if sym not in table[idx]:
-                    if gitems := self.goto(set_of_items[idx], sym):
-                        state[sym] = set_of_items.index(gitems)
-
         # Fill the reduction entries
         for idx, items in enumerate(set_of_items):
             for item in items:
