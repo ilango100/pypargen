@@ -48,9 +48,10 @@ class Parser:
             rule = self.grammar[rule_num]
 
             # Get RHS tokens and pop them off the stack
-            rhs_tokens = self.tokens[-len(rule.rhs):]
-            self.tokens = self.tokens[:-len(rule.rhs)]
-            self.states = self.states[:-len(rule.rhs)]
+            rhs_len = -len(rule.rhs) if rule.rhs else len(self.tokens)
+            rhs_tokens = self.tokens[rhs_len:]
+            self.tokens = self.tokens[:rhs_len]
+            self.states = self.states[:rhs_len]
 
             # Reduce RHS to LHS with callback
             lhs_content = self.callbacks[rule_num](

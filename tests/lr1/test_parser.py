@@ -80,3 +80,14 @@ def test_palindrome_invalid():
 
     p = parser.Parser(palindrome, functions, input)
     assert p.parse() == "aba"
+
+
+def test_eps_grammar():
+    g = grammar.Grammar([('a', ['b', 'c']), ('b', []), ('b', ['"b"']),
+                         ('c', ['c', '"c"']), ('c', ['"c"'])])
+
+    def reducer(*args):
+        return list(args)
+
+    p = parser.Parser(g, [reducer]*len(g), io.StringIO("ccc"))
+    assert p.parse() == [[], [[['c'], 'c'], 'c']]

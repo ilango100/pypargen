@@ -99,3 +99,10 @@ def test_table_pda():
     palindrome = grammar.Grammar([('S', ['"a"', 'S', '"a"']),
                                   ('S', ['"b"', 'S', '"b"']), ('S', [])])
     palindrome.parse_table()
+
+
+def test_eps_grammar():
+    g = grammar.Grammar([('a', ['b', 'c']), ('b', []), ('b', ['"b"']),
+                         ('c', ['c', '"c"']), ('c', ['"c"'])])
+    # TODO: Check parse table
+    g.parse_table()

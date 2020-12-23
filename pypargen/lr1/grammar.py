@@ -46,7 +46,7 @@ class ShiftReduceConflict(Exception):
         ]
         conflicts = set(conflicts)
         msg = '\n'.join(map(str, conflicts))
-        super().__init__(f"Shift/Reduce Conflict:\n{msg}\n{lookahead}")
+        super().__init__(f"Shift/Reduce Conflict:\n{msg}\nlookahead: {lookahead}")
 
 
 class ReduceReduceConflict(Exception):
