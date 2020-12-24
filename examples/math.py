@@ -1,3 +1,6 @@
+# Copyright 2021 Ilango Rajagopal
+# Licensed under GPL-3.0-only
+
 """This example shows how to build a simple desk calculator with parser
 for basic math operations. It supports addition, subtraction, multiplication,
 division and brackets, with proper precedence."""

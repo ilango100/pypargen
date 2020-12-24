@@ -54,6 +54,14 @@ def test_eps_first():
     assert grm.first(['c']) == set(['"a"'])
 
 
+def test_eps_end():
+    rules = [('a', []), ('a', ['"a"'])]
+    grm = grammar.Grammar(rules)
+
+    assert grm.start == 'a'
+    assert grm.first(['a', '$']) == {'"a"', '$'}
+
+
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_reserved():
     grammar.Grammar([('__root__', ['"a"', 'S', '"a"']),

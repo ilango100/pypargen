@@ -18,7 +18,7 @@ class Grammar(list[Rule]):
             assert start in self.nonterminals,\
                     "Start symbol must be valid nonterminal"
         self._start = start
-        self._firsts = {}
+        self._firsts = {('$', ): {'$'}, (): {'ϵ'}}
 
     @property
     def start(self) -> str:
@@ -59,36 +59,20 @@ class Grammar(list[Rule]):
         firsts = set()
         if tokens[0].startswith('"'):
             firsts.add(tokens[0])
+            # Memoization
+            self._firsts[tuple(tokens)] = firsts
             return firsts
 
-        if tokens[0] == '$':
-            firsts.add('$')
-            return firsts
+        for lhs, rhs in self:
+            if tokens[0] == lhs:
+                # Avoid infinite recursion
+                # NOTE: Only first RHS token verified
+                if not rhs or lhs != rhs[0]:
+                    firsts = firsts.union(self.first(rhs))
 
-        for token in tokens:
-            if token.startswith('"'):
-                firsts.add(token)
-                break
-
-            new_firsts = set()
-            for lhs, rhs in self:
-                if token == lhs:
-                    if not rhs:
-                        new_firsts.add('ϵ')
-                        continue
-
-                    # Avoid infinite recursion
-                    # NOTE: Only first RHS token verified
-                    if lhs != rhs[0]:
-                        new_firsts = new_firsts.union(self.first(rhs))
-            firsts = firsts.union(new_firsts)
-            if 'ϵ' in firsts:
-                firsts.remove('ϵ')
-                continue
-            break
-        else:
-            if 'ϵ' in new_firsts:
-                firsts.add('ϵ')
+        if 'ϵ' in firsts:
+            firsts.remove('ϵ')
+            firsts = firsts.union(self.first(tokens[1:]))
 
         # Memoization
         self._firsts[tuple(tokens)] = firsts

@@ -1,3 +1,6 @@
+# Copyright 2021 Ilango Rajagopal
+# Licensed under GPL-3.0-only
+
 """This example shows how to build a parser that "counts"
 the number of occurences of a and b"""
 
