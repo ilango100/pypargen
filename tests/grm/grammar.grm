@@ -1,0 +1,37 @@
+ws	-> "[ \t][ \t]*"
+rng	-> "[a-z]-[a-z]"
+rng	-> "[A-Z]-[A-Z]"
+rng	-> "[0-9]-[0-9]"
+esc	-> "\\" "[\\\"\[\]\(\)\*\|rnt]"
+chr	-> "[ !#$%&'+,-./0-9:;<=>?@A-Z^_`a-z{}~ϵ]"
+sqc	-> rng
+sqc	-> esc
+sqc	-> chr
+sqs	-> sqs sqc
+sqs	-> sqc
+sq	-> "\[" sqs "\]"
+rd	-> "\(" re "\)"
+stc	-> sq
+stc	-> rd
+stc	-> esc
+stc	-> chr
+st	-> stc "\*"
+rec	-> sq
+rec	-> rd
+rec	-> st
+rec	-> esc
+rec	-> chr
+res	-> res rec
+res	-> rec
+re	-> re "\|" res
+re	-> res
+term	-> "\"" re "\""
+nont	-> "[a-zA-Z][a-zA-Z]*"
+rhsc	-> term
+rhsc	-> nont
+rhs	-> rhs ws rhsc
+rhs	-> rhsc
+stmt	-> nont ws "->" ws rhs "(\r\n|\n)(\r\n|\n)*"
+stmt	-> nont ws "->" ws "ϵ" "(\r\n|\n)(\r\n|\n)*"
+grm	-> grm stmt
+grm	-> ϵ

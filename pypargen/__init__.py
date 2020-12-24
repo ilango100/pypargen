@@ -10,3 +10,4 @@ from pypargen.token import *
 from pypargen.lexer import *
 from pypargen.grammar import *
 from pypargen import lr1
+from pypargen import grm
