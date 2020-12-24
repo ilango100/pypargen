@@ -57,11 +57,11 @@ def test_palindrome():
         return ""
 
     functions = [half] * 3
-    input_str = "abacaba"
+    input_str = "bbacabb"
     input = io.StringIO(input_str)
 
     p = parser.Parser(palindrome, functions, input)
-    assert p.parse() == "aba"
+    assert p.parse() == "bba"
 
 
 @pytest.mark.xfail(strict=True)

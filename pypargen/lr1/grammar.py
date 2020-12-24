@@ -8,7 +8,10 @@ from pypargen.rule import Rule
 
 
 class Item:
+    """Item is an LR(1) item"""
+
     def __init__(self, lhs: str, rhs: list[str], pos: int, lookahead: str):
+        """Initialize the grammar item"""
         assert 0 <= pos <= len(rhs), "Dot position out of range"
         self.lhs = lhs
         self.rhs = rhs
@@ -17,6 +20,7 @@ class Item:
 
     @property
     def done(self) -> bool:
+        """True if the position is at the end"""
         return self.pos >= len(self.rhs)
 
     def __eq__(self, other: "Item") -> bool:
@@ -39,7 +43,10 @@ class Item:
 
 
 class ShiftReduceConflict(Exception):
+    """Exception thrown when Shift/Reduce conflict is found"""
+
     def __init__(self, grm: "Grammar", items: set[Item], lookahead: str):
+        """Initialize exception with conflicting items and lookahead"""
         conflicts = [item for item in items if grm.goto([item], lookahead)]
         conflicts += [
             item for item in items if item.done and item.lookahead == lookahead
@@ -50,13 +57,20 @@ class ShiftReduceConflict(Exception):
 
 
 class ReduceReduceConflict(Exception):
+    """Exception thrown when Reduce/Reduce conflict is found"""
+
     def __init__(self, rule1: Rule, rule2: Rule):
+        """Initialize exception with conflicting reduction rules"""
         msg = '\n'.join(map(str, [rule1, rule2]))
         super().__init__(f"Reduce/Reduce Conflict:\n{msg}")
 
 
 class Grammar(BaseGrammar):
+    """Grammar is a LR(1) grammar. The parse_table method gives the parsing
+    table for the grammar."""
+
     def closure(self, items: set[Item]) -> set[Item]:
+        """Closure calculates the closure a for set of items."""
         closure_items = items.copy()
         new_items = set()
         while True:
@@ -78,6 +92,7 @@ class Grammar(BaseGrammar):
         return closure_items
 
     def goto(self, items: set[Item], token: str) -> set[Item]:
+        """Goto calculates the set of items to go to when a token is seen."""
         goto = set()
         for item in items:
             if item.done:
@@ -90,6 +105,7 @@ class Grammar(BaseGrammar):
         return self.closure(goto)
 
     def parse_table(self) -> list[dict[str, Union[int, str]]]:
+        """parse_table gives the parsing table for the grammar."""
         init_item = Item("__root__", [self.start], 0, '$')
         set_of_items = [self.closure(set([init_item]))]
 

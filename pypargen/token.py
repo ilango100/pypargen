@@ -5,6 +5,7 @@ from typing import NamedTuple
 
 
 class Token(NamedTuple):
+    """Token is a representation of a grammar token"""
     type: str
     content: any
 

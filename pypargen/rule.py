@@ -5,6 +5,7 @@ from typing import NamedTuple
 
 
 class Rule(NamedTuple):
+    """Rule is a representation of a grammar rule."""
     lhs: str
     rhs: list[str]
 
