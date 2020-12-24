@@ -2,10 +2,9 @@ ws	-> "[ \t][ \t]*"
 rng	-> "[a-z]-[a-z]"
 rng	-> "[A-Z]-[A-Z]"
 rng	-> "[0-9]-[0-9]"
-esc	-> "\\" "[\\\"\[\]\(\)\*\|rnt]"
+chr	-> "\\" "[\\\"\[\]\(\)\*\|rnt]"
 chr	-> "[ !#$%&'+,-./0-9:;<=>?@A-Z^_`a-z{}~ϵ]"
 sqc	-> rng
-sqc	-> esc
 sqc	-> chr
 sqs	-> sqs sqc
 sqs	-> sqc
@@ -14,13 +13,11 @@ rd	-> "\(" re "\)"
 rd	-> "\(" "\)"
 stc	-> sq
 stc	-> rd
-stc	-> esc
 stc	-> chr
 st	-> stc "\*"
 rec	-> sq
 rec	-> rd
 rec	-> st
-rec	-> esc
 rec	-> chr
 res	-> res rec
 res	-> rec
