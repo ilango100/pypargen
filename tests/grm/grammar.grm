@@ -11,6 +11,7 @@ sqs	-> sqs sqc
 sqs	-> sqc
 sq	-> "\[" sqs "\]"
 rd	-> "\(" re "\)"
+rd	-> "\(" "\)"
 stc	-> sq
 stc	-> rd
 stc	-> esc
