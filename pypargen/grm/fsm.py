@@ -9,8 +9,7 @@ class NFANode(dict[str, set["NFANode"]]):
         node = super().__new__(cls, *args, **kwargs)
         node._id = cls._next_id
         cls._next_id += 1
-        if token:
-            node.token = token
+        node.token = token
         return node
 
     def __init__(self, *args, **kwargs):
@@ -73,7 +72,7 @@ class DFANode(set[NFANode]):
 
     @property
     def token(self) -> str:
-        tokens = [x.token for x in self if hasattr(x, 'token')]
+        tokens = [x.token for x in self if x.token]
         if len(tokens) > 1:
             raise DFAConflict(tokens)
         if not tokens:

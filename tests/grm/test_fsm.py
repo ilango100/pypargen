@@ -31,9 +31,8 @@ def test_nfa_node_transition():
     assert start not in start['c']
     assert len(start['c']) == 3
     a = list(start['a'])[0]
-    assert hasattr(a, 'token')
     assert a.token == 'atok'
-    assert not hasattr(list(start['b'])[0], 'token')
+    assert not list(start['b'])[0].token
 
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
