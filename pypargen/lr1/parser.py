@@ -4,15 +4,20 @@
 import io
 from typing import Callable
 
-from pypargen.lr1.grammar import Grammar
-from pypargen.lexer import Lexer
+from pypargen.base.lexer import BaseLexer
+from pypargen.lexer.pyre import PyRELexer
+from pypargen.base.parser import BaseParser
 from pypargen.base.token import Token
+from pypargen.lr1.grammar import Grammar
 
 
-class Parser:
+class Parser(BaseParser):
     """Parser is an LR(1) parser"""
 
-    def __init__(self, grammar: Grammar, callbacks: list[Callable]):
+    def __init__(self,
+                 grammar: Grammar,
+                 callbacks: list[Callable],
+                 lexerClass: type[BaseLexer] = PyRELexer):
         """Initialize parser with LR(1) grammar, callbacks and input stream
 
         callbacks is a list of functions that corresponding to the rules.
@@ -38,14 +43,14 @@ class Parser:
         It could be a parse (sub)tree, calculated expression etc."""
         assert len(grammar) == len(callbacks),\
             "Callbacks and grammar must be of same size"
-        self.grammar = grammar
+        super().__init__(grammar, lexerClass)
         self.table = grammar.parse_table()
         self.callbacks = callbacks
 
     def parse(self, inpt: io.RawIOBase) -> Token:
         """Start parsing the input stream and provide the final result from\
         callbacks."""
-        lexer = Lexer(self.grammar.terminals, inpt)
+        lexer = self.lexerClass(self.grammar.terminals, inpt)
         lexer.terminals = [x for x in self.table[0] if x.startswith('"')]
         states = [0]
         tokens = [None]
