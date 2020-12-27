@@ -6,7 +6,7 @@ from typing import Callable
 
 from pypargen.lr1.grammar import Grammar
 from pypargen.lexer import Lexer
-from pypargen.token import Token
+from pypargen.base.token import Token
 
 
 class Parser:

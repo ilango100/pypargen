@@ -4,7 +4,7 @@
 from typing import Union
 
 from pypargen.grammar import Grammar as BaseGrammar
-from pypargen.rule import Rule
+from pypargen.base.rule import Rule
 
 
 class Item:

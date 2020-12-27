@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from pypargen import rule
+from pypargen.base import rule
 
 
 def test_str_rule():

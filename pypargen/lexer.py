@@ -4,7 +4,7 @@
 import re
 import io
 
-from pypargen.token import Token
+from pypargen.base.token import Token
 
 
 class InvalidCharacter(Exception):

@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from pypargen.rule import Rule
+from pypargen.base.rule import Rule
 
 
 class Grammar(list[Rule]):

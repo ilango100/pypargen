@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from pypargen import token
+from pypargen.base import token
 
 
 def test_token_nonterm():

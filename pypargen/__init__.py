@@ -5,8 +5,7 @@
 
 __version__ = "0.1.0"
 
-from pypargen.rule import *
-from pypargen.token import *
+from pypargen.base import *
 from pypargen.lexer import *
 from pypargen.grammar import *
 from pypargen import lr1
