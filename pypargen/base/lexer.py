@@ -7,6 +7,18 @@ import io
 from pypargen.base.token import Token
 
 
+class UnexpectedCharacter(Exception):
+    """Exception thrown when invalid character is seen."""
+
+    def __init__(self, char: str, pos: int):
+        """Initalize the exception with the invalid character and character
+        position"""
+        self.pos = pos
+        self.char = char
+        super().__init__(
+            f"Invalid character '{self.char}' at position {self.pos}")
+
+
 class BaseLexer:
     """BaseLexer is an abstract class for all the lexers
     The lexer API would be used as:
