@@ -93,19 +93,14 @@ def grm_append(grm, stmt):
 
 
 def grm_init():
-    return []
+    return pgen.lr1.Grammar()
 
 
 # Final grammar!
 callbacks += [grm_append, grm_init]
 
 
-def parse_grm(inpt: io.RawIOBase):
-    """This function parses the grm format file and gives the lr1.Grammar
-    object back"""
-    parser = pgen.lr1.Parser(grammar, callbacks, inpt)
-    rules = parser.parse()
-    return pgen.lr1.Grammar(rules)
+parser = pgen.lr1.Parser(grammar, callbacks)
 
 
-__all__ = ["rules", "grammar", "parse_grm"]
+__all__ = ["rules", "grammar", "parser"]

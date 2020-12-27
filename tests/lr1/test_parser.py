@@ -43,8 +43,8 @@ def test_math(math: grammar.Grammar):
     input_str = "5+1-3*4/2"
     true_result = 5 + 1 - 3 * 4 / 2
     input = io.StringIO(input_str)
-    p = parser.Parser(math, functions, input)
-    assert abs(p.parse() - true_result) <= 1e-6
+    p = parser.Parser(math, functions)
+    assert abs(p.parse(input) - true_result) <= 1e-6
 
 
 def test_palindrome():
@@ -60,8 +60,8 @@ def test_palindrome():
     input_str = "bbacabb"
     input = io.StringIO(input_str)
 
-    p = parser.Parser(palindrome, functions, input)
-    assert p.parse() == "bba"
+    p = parser.Parser(palindrome, functions)
+    assert p.parse(input) == "bba"
 
 
 @pytest.mark.xfail(strict=True)
@@ -78,8 +78,8 @@ def test_palindrome_invalid():
     input_str = "abacabb"
     input = io.StringIO(input_str)
 
-    p = parser.Parser(palindrome, functions, input)
-    assert p.parse() == "aba"
+    p = parser.Parser(palindrome, functions)
+    assert p.parse(input) == "aba"
 
 
 def test_eps_grammar():
@@ -89,5 +89,5 @@ def test_eps_grammar():
     def reducer(*args):
         return list(args)
 
-    p = parser.Parser(g, [reducer]*len(g), io.StringIO("ccc"))
-    assert p.parse() == [[], [[['c'], 'c'], 'c']]
+    p = parser.Parser(g, [reducer]*len(g))
+    assert p.parse(io.StringIO("ccc")) == [[], [[['c'], 'c'], 'c']]

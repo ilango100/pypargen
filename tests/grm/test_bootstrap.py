@@ -10,12 +10,12 @@ import pypargen as pgen
 @pytest.mark.slow
 def test_bootstrap():
     grm_file = pathlib.Path(__file__).parent / "grammar.grm"
-    grm1 = pgen.grm.parse_grm(open(grm_file))
+    grm1 = pgen.grm.parser.parse(open(grm_file))
     # Grammar is parsed to get the grammar for the grammar
 
-    grm2 = pgen.grm.parse_grm(io.StringIO(str(grm1)))
+    grm2 = pgen.grm.parser.parse(io.StringIO(str(grm1)))
 
-    grm3 = pgen.grm.parse_grm(io.StringIO(str(grm2)))
+    grm3 = pgen.grm.parser.parse(io.StringIO(str(grm2)))
 
     assert grm1 == grm2 == grm3
     with open(grm_file) as grm_fp:
