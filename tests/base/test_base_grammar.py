@@ -2,18 +2,18 @@
 # Licensed under GPL-3.0-only
 
 import pytest
-from pypargen import grammar
+from pypargen.base.grammar import BaseGrammar
 
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_empty_grammar():
-    empty = grammar.Grammar()
+    empty = BaseGrammar()
     empty.start
 
 
 def test_palindrome():
-    palindrome = grammar.Grammar([('S', ['"a"', 'S', '"a"']),
-                                  ('S', ['"b"', 'S', '"b"']), ('S', [])])
+    palindrome = BaseGrammar([('S', ['"a"', 'S', '"a"']),
+                              ('S', ['"b"', 'S', '"b"']), ('S', [])])
     assert palindrome.start == 'S'
     assert palindrome.terminals == {'"a"', '"b"'}
     assert palindrome.nonterminals == {'S'}
@@ -31,7 +31,7 @@ def test_math():
                   ("mul", ["mul", r'"\*"', "div"]), ("mul", ["div"]),
                   ("add", ["add", r'"\+"', "mul"]), ("add", ["mul"]),
                   ("sub", ["sub", '"-"', "add"]), ("sub", ["add"])]
-    math = grammar.Grammar(math_rules, 'sub')
+    math = BaseGrammar(math_rules, 'sub')
     assert math.start == 'sub'
     assert math.terminals == {
         '"[1-9][0-9]*"', r'"\("', r'"\)"', '"/"', r'"\*"', r'"\+"', '"-"'
@@ -46,7 +46,7 @@ def test_math():
 
 def test_eps_first():
     rules = [('a', []), ('b', []), ('c', ['a', 'b', '"a"'])]
-    grm = grammar.Grammar(rules)
+    grm = BaseGrammar(rules)
     grm.start = 'c'
 
     assert grm.first(['a']) == set(['ϵ'])
@@ -56,7 +56,7 @@ def test_eps_first():
 
 def test_eps_end():
     rules = [('a', []), ('a', ['"a"'])]
-    grm = grammar.Grammar(rules)
+    grm = BaseGrammar(rules)
 
     assert grm.start == 'a'
     assert grm.first(['a', '$']) == {'"a"', '$'}
@@ -64,19 +64,18 @@ def test_eps_end():
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_reserved():
-    grammar.Grammar([('__root__', ['"a"', 'S', '"a"']),
-                     ('__root__', ['"b"', 'S', '"b"']), ('__root__', ['"c"'])])
+    BaseGrammar([('__root__', ['"a"', 'S', '"a"']),
+                 ('__root__', ['"b"', 'S', '"b"']), ('__root__', ['"c"'])])
 
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_invalid_start():
-    grammar.Grammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"', 'S', '"b"']),
-                     ('S', [])], 'T')
+    BaseGrammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"', 'S', '"b"']),
+                 ('S', [])], 'T')
 
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_invalid_start_set():
-    g = grammar.Grammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"',
-                                                            'S', '"b"']),
-                         ('S', [])])
+    g = BaseGrammar([('S', ['"a"', 'S', '"a"']), ('S', ['"b"', 'S', '"b"']),
+                     ('S', [])])
     g.start = 'T'

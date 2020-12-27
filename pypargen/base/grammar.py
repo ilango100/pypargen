@@ -4,7 +4,7 @@
 from pypargen.base.rule import Rule
 
 
-class Grammar(list[Rule]):
+class BaseGrammar(list[Rule]):
     """Grammar defines a context free grammar. It is simply a list of rules."""
 
     def __init__(self, iterable=(), start=None):

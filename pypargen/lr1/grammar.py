@@ -3,7 +3,7 @@
 
 from typing import Union
 
-from pypargen.grammar import Grammar as BaseGrammar
+from pypargen.base.grammar import BaseGrammar
 from pypargen.base.rule import Rule
 
 

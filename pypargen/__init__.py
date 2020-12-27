@@ -7,6 +7,5 @@ __version__ = "0.1.0"
 
 from pypargen.base import *
 from pypargen.lexer import *
-from pypargen.grammar import *
-from pypargen import lr1
+from pypargen.lr1 import *
 from pypargen import grm
