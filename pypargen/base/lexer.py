@@ -8,12 +8,12 @@ from pypargen.base.token import Token
 
 
 class BaseLexer:
-    """This is an abstract class for all the lexers
+    """BaseLexer is an abstract class for all the lexers
     The lexer API would be used as:
     ```
     terminals = ['"[a-z]+"', '"[A-Z]+"']
     lexer = Lexer(terminals, sys.stdin)
-    print(list(lexer))
+    tokens = list(lexer)
     ```
     """
 
