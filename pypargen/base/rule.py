@@ -17,6 +17,3 @@ class Rule(NamedTuple):
 
     def __repr__(self) -> str:
         return f"<{self.__str__()}>"
-
-
-__all__ = ["Rule"]
