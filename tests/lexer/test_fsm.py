@@ -2,7 +2,7 @@
 # Licensed under GPL-3.0-only
 
 import pytest
-from pypargen.grm import fsm
+from pypargen.lexer import fsm
 
 
 def test_nfa_node_id():
