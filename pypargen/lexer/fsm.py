@@ -102,6 +102,8 @@ class DFA:
             state = nstate
         else:
             i += 1
+        if len(string) == 0:
+            i = 0
         if state.tokens:
             return (state.tokens, i)
         return False

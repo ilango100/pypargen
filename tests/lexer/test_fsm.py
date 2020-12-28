@@ -22,12 +22,13 @@ def test_nfa_node_transition():
     start = fsm.NFANode()
     start.add_transition('a', fsm.NFANode('atok'))
     start.add_transition('b', fsm.NFANode())
+    start.add_transition('c', fsm.NFANode())
     start.add_transitions('c', [fsm.NFANode(), fsm.NFANode(), fsm.NFANode()])
     assert list(start.keys()) == list("abc")
     assert start not in start['a']
     assert start not in start['b']
     assert start not in start['c']
-    assert len(start['c']) == 3
+    assert len(start['c']) == 4
     a = list(start['a'])[0]
     assert a.token == 'atok'
     assert not list(start['b'])[0].token
@@ -111,6 +112,18 @@ def test_dfa():
     assert dfa.match("aadaddd") == ({"end"}, 5)
     assert not dfa.match("aaa")
     assert not dfa.match("a")
+
+
+def test_dfa_empty():
+    nfa = fsm.NFA()
+    nfa.start.add_transition('', nfa.end)
+    nfa.end.token = "empty"
+
+    dfa = fsm.DFA(nfa)
+
+    assert dfa.match("hello")[1] == 0
+    assert dfa.match("")[1] == 0
+    assert dfa.match("abcd")[1] == 0
 
 
 def test_combine_dfa():
