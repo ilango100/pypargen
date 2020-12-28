@@ -4,54 +4,17 @@
 import io
 
 from pypargen.lr1 import Grammar, Parser
+from pypargen.grm.grammar import grammar
 from pypargen.lexer import PyRELexer
 from pypargen.base.lexer import BaseLexer
 from pypargen.base.rule import Rule
-
-rules = [
-    ("ws", [r'"[ \t][ \t]*"']),
-    ("rng", [r'"[a-z]-[a-z]"']),
-    ("rng", [r'"[A-Z]-[A-Z]"']),
-    ("rng", [r'"[0-9]-[0-9]"']),
-    ("chr", [r'"\\"', r'"[\\\"\[\]\(\)\*\|rnt.]"']),
-    ("chr", ['"[ !#$%&\'+,-./0-9:;<=>?@A-Z^_`a-z{}~ϵ]"']),
-    ("sqc", ["rng"]),
-    ("sqc", ["chr"]),
-    ("sqs", ["sqs", "sqc"]),
-    ("sqs", ["sqc"]),
-    ("sq", [r'"\["', "sqs", r'"\]"']),
-    ("rd", [r'"\("', "re", r'"\)"']),
-    ("rd", [r'"\("', r'"\)"']),
-    ("stc", ["sq"]),
-    ("stc", ["rd"]),
-    ("stc", ["chr"]),
-    ("st", ["stc", r'"\*"']),
-    ("rec", ["sq"]),
-    ("rec", ["rd"]),
-    ("rec", ["st"]),
-    ("rec", ["chr"]),
-    ("res", ["res", "rec"]),
-    ("res", ["rec"]),
-    ("re", ["re", r'"\|"', "res"]),
-    ("re", ["res"]),
-    ("term", [r'"\""', "re", r'"\""']),
-    ("nont", [r'"[a-zA-Z][a-zA-Z]*"']),
-    ("rhsc", ["term"]),
-    ("rhsc", ["nont"]),
-    ("rhs", ["rhs", "ws", "rhsc"]),
-    ("rhs", ["rhsc"]),
-    ("stmt", ["nont", "ws", r'"->"', "ws", "rhs", r'"(\r\n|\n)(\r\n|\n)*"']),
-    ("stmt", ["nont", "ws", r'"->"', "ws", r'"ϵ"', r'"(\r\n|\n)(\r\n|\n)*"']),
-    ("grm", ["grm", "stmt"]),
-    ("grm", [])
-]
 
 
 def join_str(*args):
     return ''.join(args)
 
 
-# For all the terminal processing
+# For all the terminals processing
 callbacks = [join_str] * 26
 
 
@@ -103,7 +66,7 @@ callbacks += [grm_append, grm_init]
 
 class GrmParser(Parser):
     def __init__(self, lexerClass: BaseLexer = PyRELexer):
-        super().__init__(Grammar(rules, start="grm"), callbacks, PyRELexer)
+        super().__init__(grammar, callbacks, lexerClass)
 
     def parse(self, inpt: io.RawIOBase) -> Grammar:
         return super().parse(inpt)
