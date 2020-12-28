@@ -6,7 +6,8 @@ import re
 import io
 
 from pypargen.base.token import Token
-from pypargen.base.lexer import UnexpectedCharacter, UnregisteredTerminal, BaseLexer
+from pypargen.base.lexer import BaseLexer, UnexpectedCharacter,\
+        UnregisteredTerminal
 
 
 class PyRELexer(BaseLexer):
@@ -45,4 +46,4 @@ class PyRELexer(BaseLexer):
                 term = match.group(0)
                 self.pos += len(term)
                 return Token(patt, term)
-        raise UnexpectedCharacter(self.str[self.pos], self.pos)
+        raise UnexpectedCharacter(self.str[self.pos], self.pos, terminals)

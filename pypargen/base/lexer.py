@@ -10,13 +10,21 @@ from pypargen.base.token import Token
 class UnexpectedCharacter(Exception):
     """Exception thrown when invalid character is seen."""
 
-    def __init__(self, char: str, pos: int):
+    def __init__(self,
+                 char: str,
+                 pos: int,
+                 expected: Optional[list[str]] = None):
         """Initalize the exception with the invalid character and character
         position"""
         self.pos = pos
         self.char = char
-        super().__init__(
-            f"Invalid character '{self.char}' at position {self.pos}")
+        self.expected = expected
+
+        msg = f"Invalid character '{self.char}' at position {self.pos}"
+        if expected is not None:
+            msg += f"\nExpected one of: {self.expected}"
+
+        super().__init__(msg)
 
 
 class UnregisteredTerminal(Exception):
