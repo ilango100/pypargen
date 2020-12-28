@@ -51,22 +51,25 @@ class Parser(BaseParser):
         """Start parsing the input stream and provide the final result from\
         callbacks."""
         lexer = self.lexerClass(self.grammar.terminals, inpt)
-        terminals = [x for x in self.table[0] if x.startswith('"')]
         states = [0]
         tokens = [None]
 
-        token = lexer.nextToken(terminals)
+        token = lexer.nextToken(
+            [x for x in self.table[0] if x.startswith('"')])
         while True:
-            if not token:
-                token = lexer.nextToken(terminals)
-            nxt = self.table[states[-1]][token.type]
+            if (nxt := self.table[states[-1]].get(token.type, None)) is None:
+                if token.type.startswith('"'):
+                    raise SyntaxError("Unexpected terminal",
+                                      ("input", 0, 0, token.content))
+                raise SyntaxError("Unexpected token",
+                                  ("input", 0, 0, token.type))
             if isinstance(nxt, int):
                 states.append(nxt)
                 tokens.append(token)
 
-                # Setup lexer for next token
-                terminals = [x for x in self.table[nxt] if x.startswith('"')]
-                token = Token('', '')
+                # Read the next token
+                token = lexer.nextToken(
+                    [x for x in self.table[nxt] if x.startswith('"')])
                 continue
 
             if nxt == 'c':

@@ -42,9 +42,9 @@ def test_math(math: grammar.Grammar):
     functions = [convnum, brac, div, nop, mul, nop, add, nop, sub, nop]
     input_str = "5+1-3*4/2"
     true_result = 5 + 1 - 3 * 4 / 2
-    input = io.StringIO(input_str)
+    inputbuf = io.StringIO(input_str)
     p = parser.Parser(math, functions)
-    assert abs(p.parse(input) - true_result) <= 1e-6
+    assert abs(p.parse(inputbuf) - true_result) <= 1e-6
 
 
 def test_palindrome():
@@ -58,10 +58,10 @@ def test_palindrome():
 
     functions = [half] * 3
     input_str = "bbacabb"
-    input = io.StringIO(input_str)
+    inputbuf = io.StringIO(input_str)
 
     p = parser.Parser(palindrome, functions)
-    assert p.parse(input) == "bba"
+    assert p.parse(inputbuf) == "bba"
 
 
 @pytest.mark.xfail(strict=True)
@@ -76,10 +76,10 @@ def test_palindrome_invalid():
 
     functions = [half] * 3
     input_str = "abacabb"
-    input = io.StringIO(input_str)
+    inputbuf = io.StringIO(input_str)
 
     p = parser.Parser(palindrome, functions)
-    assert p.parse(input) == "aba"
+    assert p.parse(inputbuf) == "aba"
 
 
 def test_eps_grammar():

@@ -35,6 +35,7 @@ class BaseLexer:
     terminals = ['"[a-z]+"', '"[A-Z]+"']
     lexer = Lexer(terminals, sys.stdin)
     tokens = list(lexer)
+    pos = lexer.pos
     ```
     """
 
