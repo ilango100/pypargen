@@ -3,4 +3,6 @@
 
 """This module provides utilities to read the grm grammar format"""
 
-from pypargen.grm.grm_parser import *
+from pypargen.grm.parser import GrmParser
+
+__all__ = ["GrmParser"]

@@ -1,9 +1,12 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
-"""Rules, Grammar and Parser to parse grm format"""
 
-import pypargen as pgen
 import io
+
+from pypargen.lr1 import Grammar, Parser
+from pypargen.lexer import PyRELexer
+from pypargen.base.lexer import BaseLexer
+from pypargen.base.rule import Rule
 
 rules = [
     ("ws", [r'"[ \t][ \t]*"']),
@@ -43,8 +46,6 @@ rules = [
     ("grm", [])
 ]
 
-grammar = pgen.lr1.Grammar(rules, "grm")
-
 
 def join_str(*args):
     return ''.join(args)
@@ -76,11 +77,11 @@ callbacks += [rhs_append, rhs_init]
 
 
 def stmt(nont, _ws, _arrow, _ws2, rhs, _nl):
-    return pgen.Rule(nont, rhs)
+    return Rule(nont, rhs)
 
 
 def stmt_eps(nont, _ws, _arrow, _ws2, _eps, _nl):
-    return pgen.Rule(nont, [])
+    return Rule(nont, [])
 
 
 # For building statement
@@ -93,14 +94,16 @@ def grm_append(grm, stmt):
 
 
 def grm_init():
-    return pgen.lr1.Grammar()
+    return Grammar()
 
 
 # Final grammar!
 callbacks += [grm_append, grm_init]
 
 
-parser = pgen.lr1.Parser(grammar, callbacks)
+class GrmParser(Parser):
+    def __init__(self, lexerClass: BaseLexer = PyRELexer):
+        super().__init__(Grammar(rules, start="grm"), callbacks, PyRELexer)
 
-
-__all__ = ["rules", "grammar", "parser"]
+    def parse(self, inpt: io.RawIOBase) -> Grammar:
+        return super().parse(inpt)

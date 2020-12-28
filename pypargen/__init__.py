@@ -8,4 +8,4 @@ __version__ = "0.1.0"
 from pypargen.base import *
 from pypargen.lexer import *
 from pypargen.lr1 import *
-from pypargen import grm
+from pypargen.grm import *
