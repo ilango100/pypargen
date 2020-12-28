@@ -22,9 +22,7 @@ def test_nfa_node_transition():
     start = fsm.NFANode()
     start.add_transition('a', fsm.NFANode('atok'))
     start.add_transition('b', fsm.NFANode())
-    start.add_transition('c', fsm.NFANode())
-    start.add_transition('c', fsm.NFANode())
-    start.add_transition('c', fsm.NFANode())
+    start.add_transitions('c', [fsm.NFANode(), fsm.NFANode(), fsm.NFANode()])
     assert list(start.keys()) == list("abc")
     assert start not in start['a']
     assert start not in start['b']
@@ -33,6 +31,13 @@ def test_nfa_node_transition():
     a = list(start['a'])[0]
     assert a.token == 'atok'
     assert not list(start['b'])[0].token
+
+
+def test_nfa_node_multi_chars_transition():
+    start = fsm.NFANode()
+    start.add_chars_transition('hello', fsm.NFANode('got'))
+    assert set(start.keys()) == set('hello')
+    assert start['h'] == start['e'] == start['l'] == start['o']
 
 
 @pytest.mark.xfail(strict=True, raises=AssertionError)
@@ -71,12 +76,11 @@ def test_dfa_node():
     assert d not in dfanode
     assert d in dfanode.move('a')
     assert len(dfanode.move('a')) == 1
-    assert not dfanode.token
-    assert dfanode.move('a').token == "atok"
+    assert not dfanode.tokens
+    assert dfanode.move('a').tokens == {"atok"}
 
 
-@pytest.mark.xfail(strict=True, raises=fsm.DFAConflict)
-def test_dfa_node_conflict():
+def test_dfa_node_multi_tokens():
     a = fsm.NFANode()
     b = fsm.NFANode('b')
     c = fsm.NFANode('c')
@@ -84,7 +88,7 @@ def test_dfa_node_conflict():
     a.add_transition('a', c)
 
     dfanode = fsm.DFANode({a})
-    dfanode.move('a').token
+    assert dfanode.move('a').tokens == {'b', 'c'}
 
 
 def test_dfa():
@@ -103,7 +107,42 @@ def test_dfa():
     nfa.end.add_transition('a', d)
 
     dfa = fsm.DFA(nfa)
-    assert dfa.match("aad") == ("end", 3)
-    assert dfa.match("aadaddd") == ("end", 5)
+    assert dfa.match("aad") == ({"end"}, 3)
+    assert dfa.match("aadaddd") == ({"end"}, 5)
     assert not dfa.match("aaa")
     assert not dfa.match("a")
+
+
+def test_combine_dfa():
+    hello = fsm.NFA()
+    h = fsm.NFANode()
+    e = fsm.NFANode()
+    l1 = fsm.NFANode()
+    l2 = fsm.NFANode()
+
+    hello.start.add_transition('h', h)
+    h.add_transition('e', e)
+    e.add_transition('l', l1)
+    l1.add_transition('l', l2)
+    l2.add_transition('o', hello.end)
+    hello.end.token = "hello"
+
+    hola = fsm.NFA()
+    h = fsm.NFANode()
+    o = fsm.NFANode()
+    l1 = fsm.NFANode()
+
+    hola.start.add_transition('h', h)
+    h.add_transition('o', o)
+    o.add_transition('l', l1)
+    l1.add_transition('a', hola.end)
+    hola.end.token = "hola"
+
+    hellohola = fsm.NFA()
+    hellohola.start.add_transitions('', [hello.start, hola.start])
+
+    hhDFA = fsm.DFA(hellohola)
+
+    assert hhDFA.match('holahello') == ({'hola'}, 4)
+    assert hhDFA.match('hellohola') == ({'hello'}, 5)
+    assert not hhDFA.match('helo')

@@ -47,7 +47,7 @@ class Parser(BaseParser):
         self.table = grammar.parse_table()
         self.callbacks = callbacks
 
-    def parse(self, inpt: io.RawIOBase) -> Token:
+    def parse(self, inpt: io.RawIOBase) -> any:
         """Start parsing the input stream and provide the final result from\
         callbacks."""
         lexer = self.lexerClass(self.grammar.terminals, inpt)

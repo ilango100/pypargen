@@ -65,7 +65,7 @@ callbacks += [grm_append, grm_init]
 
 
 class GrmParser(Parser):
-    def __init__(self, lexerClass: BaseLexer = PyRELexer):
+    def __init__(self, lexerClass: type[BaseLexer] = PyRELexer):
         super().__init__(grammar, callbacks, lexerClass)
 
     def parse(self, inpt: io.RawIOBase) -> Grammar:

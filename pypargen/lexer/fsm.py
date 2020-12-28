@@ -23,6 +23,21 @@ class NFANode(dict[str, set["NFANode"]]):
             return
         self[char] = {nxt}
 
+    def add_transitions(self, char: str, nxts: list["NFANode"]):
+        assert len(char) <= 1,\
+                "Transition can only be added with single or less character"
+        if char in self:
+            self[char].update(nxts)
+            return
+        self[char] = set(nxts)
+
+    def add_chars_transition(self, chars: str, nxt: "NFANode"):
+        for char in chars:
+            if char in self:
+                self[char].add(nxt)
+                continue
+            self[char] = {nxt}
+
     def __eq__(self, other: "NFANode"):
         return self._id == other._id
 
@@ -41,11 +56,6 @@ class NFA:
             end = NFANode()
         self.start = start
         self.end = end
-
-
-class DFAConflict(Exception):
-    def __init__(self, conflicts):
-        super().__init__(f"Conflicting tokens found: {conflicts}")
 
 
 class DFANode(set[NFANode]):
@@ -71,19 +81,16 @@ class DFANode(set[NFANode]):
         return DFANode(destNodes)
 
     @property
-    def token(self) -> str:
-        tokens = [x.token for x in self if x.token]
-        if len(tokens) > 1:
-            raise DFAConflict(tokens)
+    def tokens(self) -> set[str]:
+        tokens = {x.token for x in self if x.token}
         if not tokens:
             return False
-        return tokens[0]
+        return tokens
 
 
 class DFA:
     def __init__(self, nfa: NFA):
         self.start = DFANode({nfa.start})
-        self.end = nfa.end
 
     def match(self, string: str) -> tuple[int, str]:
         state = self.start
@@ -95,6 +102,6 @@ class DFA:
             state = nstate
         else:
             i += 1
-        if state.token:
-            return (state.token, i)
+        if state.tokens:
+            return (state.tokens, i)
         return False
