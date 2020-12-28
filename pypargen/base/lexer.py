@@ -1,7 +1,7 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from typing import Iterable
+from typing import Iterable, Optional
 import io
 
 from pypargen.base.token import Token
@@ -19,6 +19,15 @@ class UnexpectedCharacter(Exception):
             f"Invalid character '{self.char}' at position {self.pos}")
 
 
+class UnregisteredTerminal(Exception):
+    """Exception thrown when an active terminal passed is unregistered"""
+
+    def __init__(self, terminal: str):
+        """Initialize the exception with that invalid terminal"""
+        self.terminal = terminal
+        super().__init__(f"Unregistered terminal: {self.terminal}")
+
+
 class BaseLexer:
     """BaseLexer is an abstract class for all the lexers
     The lexer API would be used as:
@@ -31,16 +40,27 @@ class BaseLexer:
 
     def __init__(self, terminals: list[str], inpt: io.RawIOBase):
         """Initialize lexer with terminals that should be looked for and input
-        stream"""
+        stream. The order of terminals may imply precedence."""
         assert all([x.startswith('"') for x in terminals]), \
             "All terminals must start with a \""
 
         self.terminals = terminals
         self.input = inpt
 
-    def __iter__(self) -> Iterable:
+    def nextToken(self, terminals: Optional[list[str]] = None) -> Token:
+        """Override the nextToken method based on the lexer
+
+        The parser can call this method to change the terminals to look for.
+        The order of terminals may imply precendence."""
+        raise NotImplementedError("Use a subclass of BaseLexer")
+
+    def __iter__(self) -> Iterable[Token]:
         return self
 
     def __next__(self) -> Token:
-        "Override the iterator protocol based on the lexer"
-        raise NotImplementedError("Use a subclass of BaseLexer")
+        """Implements iterator protocol
+
+        This will simply call nextToken method without terminals argument
+        and returns the value. Useful for simple grammars.
+        """
+        return self.nextToken()

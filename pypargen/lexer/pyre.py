@@ -1,20 +1,19 @@
 # Copyright 2021 Ilango Rajagopal
 # Licensed under GPL-3.0-only
 
-from typing import Iterable
+from typing import Optional
 import re
 import io
 
 from pypargen.base.token import Token
-from pypargen.base.lexer import UnexpectedCharacter, BaseLexer
+from pypargen.base.lexer import UnexpectedCharacter, UnregisteredTerminal, BaseLexer
 
 
 class PyRELexer(BaseLexer):
     """Lexical tokenizer based on re library."""
 
     def __init__(self, terminals: list[str], inpt: io.RawIOBase):
-        """Initialize lexer with terminals that should be looked for and input
-        stream"""
+        """Initialize lexer with terminals to be looked for and input stream"""
         super().__init__(terminals, inpt)
         self._patterns = {patt: re.compile(patt[1:-1]) for patt in terminals}
 
@@ -25,10 +24,7 @@ class PyRELexer(BaseLexer):
         self.pos = 0
         self.stopped = False
 
-    def __iter__(self) -> Iterable[Token]:
-        return self
-
-    def __next__(self) -> Token:
+    def nextToken(self, terminals: Optional[list[str]] = None) -> Token:
         if self.stopped:
             raise StopIteration
 
@@ -38,8 +34,13 @@ class PyRELexer(BaseLexer):
             return Token('$', None)
 
         # Check for active patterns
-        # Changing self.terminals changes "active" terminals to look for
-        for patt in self.terminals:
+        if not terminals:
+            terminals = self.terminals
+
+        # Passing terminals changes "active" terminals to look for
+        for patt in terminals:
+            if patt not in self.terminals:
+                raise UnregisteredTerminal(patt)
             if match := self._patterns[patt].match(self.str, self.pos):
                 term = match.group(0)
                 self.pos += len(term)
