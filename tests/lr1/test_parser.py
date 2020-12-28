@@ -82,6 +82,22 @@ def test_palindrome_invalid():
     assert p.parse(inputbuf) == "aba"
 
 
+@pytest.mark.xfail(strict=True, raises=EOFError)
+def test_eof_error():
+    palindrome = grammar.Grammar([('S', ['"a"', 'S', '"a"']),
+                                  ('S', ['"b"', 'S', '"b"']), ('S', ['"c"'])])
+
+    def nop(*args):
+        pass
+
+    functions = [nop] * 3
+    input_str = "abacab"
+    inputbuf = io.StringIO(input_str)
+
+    p = parser.Parser(palindrome, functions)
+    assert p.parse(inputbuf) == "aba"
+
+
 def test_eps_grammar():
     g = grammar.Grammar([('a', ['b', 'c']), ('b', []), ('b', ['"b"']),
                          ('c', ['c', '"c"']), ('c', ['"c"'])])
@@ -89,5 +105,5 @@ def test_eps_grammar():
     def reducer(*args):
         return list(args)
 
-    p = parser.Parser(g, [reducer]*len(g))
+    p = parser.Parser(g, [reducer] * len(g))
     assert p.parse(io.StringIO("ccc")) == [[], [[['c'], 'c'], 'c']]

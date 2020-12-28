@@ -58,9 +58,8 @@ class Parser(BaseParser):
             [x for x in self.table[0] if x.startswith('"')])
         while True:
             if (nxt := self.table[states[-1]].get(token.type, None)) is None:
-                if token.type.startswith('"'):
-                    raise SyntaxError("Unexpected terminal",
-                                      ("input", 0, 0, token.content))
+                if token.type == '$':
+                    raise EOFError("Unexpected EOF")
                 raise SyntaxError("Unexpected token",
                                   ("input", 0, 0, token.type))
             if isinstance(nxt, int):
