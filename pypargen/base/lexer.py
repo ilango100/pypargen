@@ -44,7 +44,8 @@ class BaseLexer:
         assert all([x.startswith('"') for x in terminals]), \
             "All terminals must start with a \""
 
-        self.terminals = terminals
+        # Make a copy of terminals so that original changes are not reflected
+        self.terminals = terminals.copy()
         self.input = inpt
 
     def nextToken(self, terminals: Optional[list[str]] = None) -> Token:

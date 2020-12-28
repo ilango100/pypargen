@@ -49,3 +49,35 @@ def test_invalid():
     assert lexer1.terminals == terminals
 
     list(lexer1)
+
+
+def test_active():
+    terminals = ['"[a-z]"', '"[A-Za-z]"']
+    inputstr = "abcAbc"
+    inputbuf = io.StringIO(inputstr)
+    lexer1 = pyre.PyRELexer(terminals, inputbuf)
+    i = 0
+
+    while (tok := lexer1.nextToken(terminals)).type != '$':
+        if i == 3:
+            terminals = terminals[1:]
+        assert tok.type == terminals[0]
+        assert tok.content == inputstr[i]
+        i += 1
+
+
+@pytest.mark.xfail(strict=True, raises=pyre.UnregisteredTerminal)
+def test_active_invalid():
+    terminals = ['"[a-z]"', '"[A-Za-z]"']
+    inputstr = "abcABC"
+    inputbuf = io.StringIO(inputstr)
+    lexer1 = pyre.PyRELexer(terminals, inputbuf)
+    i = 0
+
+    while (tok := lexer1.nextToken(terminals)).type != '$':
+        assert tok.type == terminals[0]
+        assert tok.content == inputstr[i]
+        i += 1
+        if i == 3:
+            terminals = ['"[A-Z]"']
+    raise RuntimeError("Should not reach here")
