@@ -69,10 +69,12 @@ class Grammar(BaseGrammar):
     """Grammar is a LR(1) grammar. The parse_table method gives the parsing
     table for the grammar."""
 
-    def closure(self, items: set[Item]) -> set[Item]:
+    def closure(self, items: list[Item]) -> list[Item]:
         """Closure calculates the closure a for set of items."""
-        closure_items = items.copy()
-        new_items = set()
+        assert len(items) == len(set(items)), "Items must not be repeated"
+
+        closure_items = {k: None for k in items}
+        new_items = {}
         while True:
             for item in closure_items:
                 if item.done:
@@ -84,16 +86,18 @@ class Grammar(BaseGrammar):
                         for lookahead in self.first(item.rhs[item.pos + 1:] +
                                                     [item.lookahead]):
                             if lookahead != 'ϵ':
-                                new_items.add(Item(lhs, rhs, 0, lookahead))
-            if closure_items.issuperset(new_items):
+                                new_items[Item(lhs, rhs, 0, lookahead)] = None
+            if set(closure_items).issuperset(new_items):
                 break
-            closure_items = closure_items.union(new_items)
-            new_items = set()
-        return closure_items
+            closure_items |= new_items
+            new_items = {}
+        return list(closure_items)
 
-    def goto(self, items: set[Item], token: str) -> set[Item]:
+    def goto(self, items: list[Item], token: str) -> list[Item]:
         """Goto calculates the set of items to go to when a token is seen."""
-        goto = set()
+        assert len(items) == len(set(items)), "Items must not be repeated"
+
+        goto = {}
         for item in items:
             if item.done:
                 continue
@@ -101,22 +105,24 @@ class Grammar(BaseGrammar):
             if item.rhs[item.pos] == token:
                 gitem = item.copy()
                 gitem.pos += 1
-                goto.add(gitem)
+                goto[gitem] = None
         return self.closure(goto)
 
     def parse_table(self) -> list[dict[str, Union[int, str]]]:
         """parse_table gives the parsing table for the grammar."""
         init_item = Item("__root__", [self.start], 0, '$')
-        set_of_items = [self.closure(set([init_item]))]
+        set_of_items = [self.closure([init_item])]
 
         table = [{}]
+        symbols = self.terminals
+        symbols.extend(self.nonterminals)
 
         # Dragon book: 4.7.1 Canonical LR(1) Parser
         # Build goto table
         while True:
             added = False
             for idx, items in enumerate(set_of_items):
-                for sym in self.terminals.union(self.nonterminals):
+                for sym in symbols:
                     if gitems := self.goto(items, sym):
                         if gitems not in set_of_items:
                             set_of_items.append(gitems)

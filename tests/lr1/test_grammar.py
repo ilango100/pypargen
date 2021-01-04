@@ -37,47 +37,47 @@ def palindrome():
 
 
 def test_closure_palindrome(palindrome: grammar.Grammar):
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"')]
     closure = palindrome.closure(items)
     assert closure == items
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')]
     closure = palindrome.closure(items)
     true_closure = items.copy()
-    true_closure.add(grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"'))
-    true_closure.add(grammar.Item('S', ['"b"', 'S', '"b"'], 0, '"a"'))
-    true_closure.add(grammar.Item('S', ['"c"'], 0, '"a"'))
+    true_closure.append(grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"'))
+    true_closure.append(grammar.Item('S', ['"b"', 'S', '"b"'], 0, '"a"'))
+    true_closure.append(grammar.Item('S', ['"c"'], 0, '"a"'))
     assert closure == true_closure
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')]
     closure = palindrome.closure(items)
     assert closure == items
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')]
     closure = palindrome.closure(items)
     assert closure == items
 
 
 def test_goto_palindrome(palindrome: grammar.Grammar):
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 0, '"a"')]
     goto = palindrome.goto(items, '"a"')
-    true_goto = set([grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')])
+    true_goto = [grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')]
     true_goto = palindrome.closure(true_goto)
     assert goto == true_goto
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 1, '"a"')]
     goto = palindrome.goto(items, 'S')
-    true_goto = set([grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')])
+    true_goto = [grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')]
     assert goto == true_goto
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 2, '"a"')]
     goto = palindrome.goto(items, '"a"')
-    true_goto = set([grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')])
+    true_goto = [grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')]
     assert goto == true_goto
 
-    items = set([grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')])
+    items = [grammar.Item('S', ['"a"', 'S', '"a"'], 3, '"a"')]
     goto = palindrome.goto(items, '"a"')
-    true_goto = set()
+    true_goto = []
     assert goto == true_goto
 
 

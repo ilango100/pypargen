@@ -36,43 +36,53 @@ class BaseGrammar(list[Rule]):
         self._start = start
 
     @property
-    def terminals(self) -> set[str]:
+    def terminals(self) -> list[str]:
         """Returns all the terminals found from the grammar"""
-        terms = set()
+        terms = []
         for _, rhs in self:
-            terms = terms.union([x for x in rhs if x.startswith('"')])
+            for tok in rhs:
+                if tok.startswith('"') and tok not in terms:
+                    terms.append(tok)
         return terms
 
     @property
-    def nonterminals(self) -> set[str]:
+    def nonterminals(self) -> list[str]:
         """Returns all the nonterminals from the grammar"""
-        return {x for x, _ in self}
+        nonterms = []
+        for lhs, _ in self:
+            if lhs not in nonterms:
+                nonterms.append(lhs)
+        return nonterms
 
     def __str__(self) -> str:
         return '\n'.join(map(str, self)) + '\n'
 
-    def first(self, tokens: list[str]) -> set[str]:
+    def first(self, tokens: list[str]) -> list[str]:
         """Returns the first set for a list of tokens"""
         if (ttokens := tuple(tokens)) in self._firsts:
             return self._firsts[ttokens]
 
-        firsts = set()
         if tokens[0].startswith('"'):
-            firsts.add(tokens[0])
+            firsts = [tokens[0]]
             # Memoization
             self._firsts[tuple(tokens)] = firsts
             return firsts
 
+        firsts = []
         for lhs, rhs in self:
             if tokens[0] == lhs:
                 # Avoid infinite recursion
                 # NOTE: Only first RHS token verified
                 if not rhs or lhs != rhs[0]:
-                    firsts = firsts.union(self.first(rhs))
+                    for f in self.first(rhs):
+                        if f not in firsts:
+                            firsts.append(f)
 
         if 'ϵ' in firsts:
             firsts.remove('ϵ')
-            firsts = firsts.union(self.first(tokens[1:]))
+            for f in self.first(tokens[1:]):
+                if f not in firsts:
+                    firsts.append(f)
 
         # Memoization
         self._firsts[tuple(tokens)] = firsts
