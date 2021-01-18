@@ -5,7 +5,7 @@
 for basic math operations. It supports addition, subtraction, multiplication,
 division and brackets, with proper precedence."""
 
-from pypargen.lr1 import Grammar, Parser
+import pypargen as pgen
 import sys
 
 math_rules = [("atom", ['"[1-9][0-9]*"']), ("atom", [r'"\("', "sub", r'"\)"']),
@@ -15,7 +15,7 @@ math_rules = [("atom", ['"[1-9][0-9]*"']), ("atom", [r'"\("', "sub", r'"\)"']),
               ("sub", ["sub", '"-"', "add"]), ("sub", ["add"]),
               ("expr", ["sub", r'"\n\n*"'])]
 
-math = Grammar(math_rules, "expr")
+math = pgen.Grammar(math_rules, "expr")
 
 
 def convnum(a):
@@ -48,7 +48,7 @@ def nop(a, *_):
 
 
 callbacks = [convnum, bracket, div, nop, mul, nop, add, nop, sub, nop, nop]
-parser = Parser(math, callbacks, sys.stdin)
-result = parser.parse()
+parser = pgen.Parser(math, callbacks)
+result = parser.parse(sys.stdin)
 
 print(result)
