@@ -71,12 +71,20 @@ class BaseGrammar(list[Rule]):
         firsts = []
         for lhs, rhs in self:
             if tokens[0] == lhs:
-                # Avoid infinite recursion
+                recursive = False
                 # NOTE: Only first RHS token verified
-                if not rhs or lhs != rhs[0]:
-                    for f in self.first(rhs):
-                        if f not in firsts:
-                            firsts.append(f)
+                if rhs and lhs == rhs[0]:
+                    # Left recursive, check if empty
+                    for lhsi, rhsi in self:
+                        if lhsi == lhs and len(rhsi) <= 0:
+                            recursive = True
+                            break
+                    if not recursive:
+                        continue
+
+                for f in self.first(rhs[1:] if recursive else rhs):
+                    if f not in firsts:
+                        firsts.append(f)
 
         if 'ϵ' in firsts:
             firsts.remove('ϵ')
