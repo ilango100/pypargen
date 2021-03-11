@@ -41,7 +41,7 @@ def test_math(math: grammar.Grammar):
 
     functions = [convnum, brac, div, nop, mul, nop, add, nop, sub, nop]
     input_str = "5+1-3*4/2"
-    true_result = 5 + 1 - 3 * 4 / 2
+    true_result = eval(input_str)
     inputbuf = io.StringIO(input_str)
     p = parser.Parser(math, functions)
     assert abs(p.parse(inputbuf) - true_result) <= 1e-6

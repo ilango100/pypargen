@@ -6,7 +6,8 @@ import io
 from pypargen.lexer import pyre, lexer
 
 
-def palindrome(lexerClass):
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+def test_palindrome(lexerClass):
     terminals = ['"a"', '"b"']
     input = "aabb"
     inputbuf = io.StringIO(input)
@@ -22,7 +23,8 @@ def palindrome(lexerClass):
             ] == [terminals[i] for i in true_token_types] + ['$']
 
 
-def math(lexerClass):
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+def test_math(lexerClass):
     terminals = [
         '"[1-9][0-9]*"', r'"\("', r'"\)"', '"/"', r'"\*"', r'"\+"', '"-"'
     ]
@@ -43,7 +45,9 @@ def math(lexerClass):
             ] == [terminals[i] for i in true_token_types] + ['$']
 
 
-def invalid(lexerClass):
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+@pytest.mark.xfail(strict=True, raises=pyre.UnexpectedCharacter)
+def test_invalid(lexerClass):
     terminals = ['"a"', '"b"']
     input = "aabxab"
     inputbuf = io.StringIO(input)
@@ -53,7 +57,8 @@ def invalid(lexerClass):
     list(lexer1)
 
 
-def active(lexerClass):
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+def test_active(lexerClass):
     terminals = ['"[a-z]"', '"[A-Za-z]"']
     inputstr = "abcAbc"
     inputbuf = io.StringIO(inputstr)
@@ -68,7 +73,9 @@ def active(lexerClass):
         i += 1
 
 
-def active_invalid(lexerClass):
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+@pytest.mark.xfail(strict=True, raises=pyre.UnregisteredTerminal)
+def test_active_invalid(lexerClass):
     terminals = ['"[a-z]"', '"[A-Za-z]"']
     inputstr = "abcABC"
     inputbuf = io.StringIO(inputstr)
@@ -82,47 +89,3 @@ def active_invalid(lexerClass):
         if i == 3:
             terminals = ['"[A-Z]"']
     raise RuntimeError("Should not reach here")
-
-
-def test_pyre_palindrome():
-    palindrome(pyre.PyRELexer)
-
-
-def test_lexer_palindrome():
-    palindrome(lexer.Lexer)
-
-
-def test_pyre_math():
-    math(pyre.PyRELexer)
-
-
-def test_lexer_palindrom():
-    math(lexer.Lexer)
-
-
-@pytest.mark.xfail(strict=True, raises=pyre.UnexpectedCharacter)
-def test_pyre_invalid():
-    invalid(pyre.PyRELexer)
-
-
-@pytest.mark.xfail(strict=True, raises=pyre.UnexpectedCharacter)
-def test_lexer_invalid():
-    invalid(lexer.Lexer)
-
-
-def test_pyre_active():
-    active(pyre.PyRELexer)
-
-
-def test_lexer_active():
-    active(lexer.Lexer)
-
-
-@pytest.mark.xfail(strict=True, raises=pyre.UnregisteredTerminal)
-def test_pyre_active_invalid():
-    active_invalid(pyre.PyRELexer)
-
-
-@pytest.mark.xfail(strict=True, raises=pyre.UnregisteredTerminal)
-def test_lexer_active_invalid():
-    active_invalid(lexer.Lexer)
