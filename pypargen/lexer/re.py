@@ -132,7 +132,7 @@ def re(re: fsm.NFA, _or: str, res: fsm.NFA) -> fsm.NFA:
 callbacks += [re, nop]
 
 
-re_rules = rules[:25]
+re_rules = rules[:len(callbacks)]
 re_grm = Grammar(re_rules, "re")
 
 

@@ -11,8 +11,9 @@ from pypargen.grm import parser
 def test_bootstrap():
     grm_file = pathlib.Path(__file__).parent / "grammar.grm"
     grm_parser = parser.GrmParser()
-    grm1 = grm_parser.parse(open(grm_file))
-    # Grammar is parsed to get the grammar for the grammar
+    with grm_file.open() as fp:
+        grm1 = grm_parser.parse(fp)
+    # Grammar grammar is parsed to get the grammar for the grammar
 
     grm2 = grm_parser.parse(io.StringIO(str(grm1)))
 

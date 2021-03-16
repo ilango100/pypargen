@@ -80,6 +80,7 @@ class BaseGrammar(list[Rule]):
                             recursive = True
                             break
                     if not recursive:
+                        # Recursive without epsilon rule
                         continue
 
                 for f in self.first(rhs[1:] if recursive else rhs):

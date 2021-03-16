@@ -62,6 +62,14 @@ def test_eps_end():
     assert grm.first(['a', '$']) == ['"a"', '$']
 
 
+def test_eps_recursive():
+    rules = [('a', ['b', '"a"']), ('b', ['b', '"b"']), ('b', [])]
+    grm = grammar.BaseGrammar(rules)
+
+    assert grm.start == 'a'
+    assert grm.first(['a', '$']) == ['"b"', '"a"']
+
+
 @pytest.mark.xfail(strict=True, raises=AssertionError)
 def test_reserved():
     grammar.BaseGrammar([('__root__', ['"a"', 'S', '"a"']),

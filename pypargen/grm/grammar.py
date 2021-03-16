@@ -39,6 +39,6 @@ rules = [
     ("stmt", ["nont", "ws", r'"->"', "ws", r'"ϵ"', r'"(\r\n|\n)(\r\n|\n)*"']),
     ("grm", ["grm", "stmt"]),
     ("grm", [])
-]
+]  # yapf: disable
 
 grammar = Grammar(rules, "grm")
