@@ -2,6 +2,7 @@
 # Licensed under GPL-3.0-only
 
 import io
+from typing import Optional
 
 from pypargen.base.grammar import BaseGrammar
 from pypargen.base.lexer import BaseLexer
@@ -19,10 +20,12 @@ class BaseParser:
 
     def __init__(self,
                  grammar: BaseGrammar,
-                 lexerClass: type[BaseLexer] = BaseLexer):
+                 lexerClass: type[BaseLexer] = BaseLexer,
+                 whitespaces: Optional[str] = None):
         "Initialize parser with grammar rules and an optional Lexer Class"
         self.grammar = grammar
         self.lexerClass = lexerClass
+        self.whitespaces = whitespaces
 
     def parse(self, inpt: io.RawIOBase) -> any:
         "Override the parse method based on the parser"

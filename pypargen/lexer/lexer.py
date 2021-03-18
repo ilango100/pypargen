@@ -13,9 +13,16 @@ from pypargen.lexer import fsm, re
 class Lexer(BaseLexer):
     """Lexer built with RE parser and FSM library right inside pypargen."""
 
-    def __init__(self, terminals: list[str], inpt: io.RawIOBase):
+    def __init__(self,
+                 terminals: list[str],
+                 inpt: io.RawIOBase,
+                 whitespaces: Optional[str] = None):
         """Initiallize the lexer. Similar to base initialization arguments."""
-        super().__init__(terminals, inpt)
+        super().__init__(terminals, inpt, whitespaces)
+        if self.whitespaces:
+            self.whitespaces = list(self.whitespaces)
+        else:
+            self.whitespaces = []
         self._re_parser = re.REParser()
         self.nfa_starts = {}
 
@@ -25,17 +32,25 @@ class Lexer(BaseLexer):
             nfa.end.token = term
             self.nfa_starts[term] = nfa.start
 
+        self.stopped = False
+        self.pos = 0
+        self.next_char()
+
+    def next_char(self):
         self.buf = self.input.read(1)
-        self.pos = len(self.buf)
+        self.pos += len(self.buf)
         if hasattr(self.buf, 'decode'):
             self.buf = self.buf.decode()
-        self.stopped = False
 
     def nextToken(self, terminals: Optional[list[str]] = None) -> Token:
         """Request next token from the Lexer. Pass optional terminals to look
         for only these terminals."""
         if self.stopped:
             raise StopIteration
+
+        # First, skip whitespaces
+        while self.buf in self.whitespaces:
+            self.next_char()
 
         if self.buf == '':
             self.stopped = True
@@ -61,10 +76,7 @@ class Lexer(BaseLexer):
             content += self.buf
 
             # Read next
-            self.buf = self.input.read(1)
-            if hasattr(self.buf, 'decode'):
-                self.buf = self.buf.decode()
-            self.pos += len(self.buf)
+            self.next_char()
 
         if not state.tokens:
             raise UnexpectedCharacter(self.buf, self.pos, terminals)

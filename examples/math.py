@@ -11,7 +11,7 @@ import sys
 math_rules = [("atom", ['"[1-9][0-9]*"']), ("atom", [r'"\("', "sub", r'"\)"']),
               ("div", ["div", '"/"', "atom"]), ("div", ["atom"]),
               ("mul", ["mul", r'"\*"', "div"]), ("mul", ["div"]),
-              ("add", ["add", r'"\+"', "mul"]), ("add", ["mul"]),
+              ("add", ["add", r'"+"', "mul"]), ("add", ["mul"]),
               ("sub", ["sub", '"-"', "add"]), ("sub", ["add"]),
               ("expr", ["sub", r'"\n\n*"'])]
 
@@ -48,7 +48,8 @@ def nop(a, *_):
 
 
 callbacks = [convnum, bracket, div, nop, mul, nop, add, nop, sub, nop, nop]
-parser = pgen.Parser(math, callbacks)
+parser = pgen.Parser(math, callbacks, pgen.Lexer, whitespaces=" \t")
+
 result = parser.parse(sys.stdin)
 
 print(result)

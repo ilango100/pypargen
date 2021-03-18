@@ -2,7 +2,7 @@
 # Licensed under GPL-3.0-only
 
 import io
-from typing import Callable
+from typing import Callable, Optional
 
 from pypargen.base.lexer import BaseLexer
 from pypargen.lexer.pyre import PyRELexer
@@ -17,7 +17,8 @@ class Parser(BaseParser):
     def __init__(self,
                  grammar: Grammar,
                  callbacks: list[Callable],
-                 lexerClass: type[BaseLexer] = PyRELexer):
+                 lexerClass: type[BaseLexer] = PyRELexer,
+                 whitespaces: Optional[str] = None):
         """Initialize parser with LR(1) grammar, callbacks and input stream
 
         callbacks is a list of functions that corresponding to the rules.
@@ -43,14 +44,14 @@ class Parser(BaseParser):
         It could be a parse (sub)tree, calculated expression etc."""
         assert len(grammar) == len(callbacks),\
             "Callbacks and grammar must be of same size"
-        super().__init__(grammar, lexerClass)
+        super().__init__(grammar, lexerClass, whitespaces)
         self.table = grammar.parse_table()
         self.callbacks = callbacks
 
     def parse(self, inpt: io.RawIOBase) -> any:
         """Start parsing the input stream and provide the final result from\
         callbacks."""
-        lexer = self.lexerClass(self.grammar.terminals, inpt)
+        lexer = self.lexerClass(self.grammar.terminals, inpt, self.whitespaces)
         states = [0]
         tokens = [None]
 

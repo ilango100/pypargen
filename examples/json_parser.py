@@ -4,23 +4,18 @@
 
 import pypargen as pgen
 import sys
+import pathlib
 
 grm_parser = pgen.GrmParser(pgen.Lexer)
-json_grm = grm_parser.parse(open("./examples/json.grm"))
-
-
-def wsvalue(_ws, value, _ws2):
-    return value
-
-
-callbacks = [wsvalue]
+with (pathlib.Path(__file__).parent / "json.grm").open() as fp:
+    json_grm = grm_parser.parse(fp)
 
 
 def nop(a):
     return a
 
 
-callbacks += [nop] * 4
+callbacks = [nop] * 4
 
 
 def true(_):
@@ -38,7 +33,7 @@ def null(_):
 callbacks += [true, false, null]
 
 
-def kvpair(_ws, key, _ws2, _colon, val):
+def kvpair(key, _colon, val):
     return (key, val)
 
 
@@ -53,7 +48,7 @@ def kvpairs_init(kvpair):
     return {key: val}
 
 
-def object_empty(_left, _ws, _right):
+def object_empty(_left, _right):
     return {}
 
 
@@ -75,7 +70,7 @@ def vals_init(val):
     return [val]
 
 
-def array_empty(_left, _ws, _right):
+def array_empty(_left, _right):
     return []
 
 
@@ -124,12 +119,10 @@ callbacks += [string]
 # Number
 callbacks += [float]
 
-# Whitespaces
-callbacks += [lambda: None]
-callbacks += [nop]
-
-
-json_parser = pgen.Parser(json_grm, callbacks, pgen.Lexer)
+json_parser = pgen.Parser(json_grm,
+                          callbacks,
+                          pgen.Lexer,
+                          whitespaces=" \t\r\n")
 
 parsed = json_parser.parse(sys.stdin)
 print(parsed)

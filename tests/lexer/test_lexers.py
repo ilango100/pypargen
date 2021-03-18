@@ -3,7 +3,27 @@
 
 import pytest
 import io
+import re
 from pypargen.lexer import pyre, lexer
+
+
+@pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])
+def test_whitespaces(lexerClass):
+    terminals = ['"a"', '"b"']
+    input = "	a a b 	b"
+    whitespaces = " \t"
+    inputbuf = io.StringIO(input)
+    lexer1 = lexerClass(terminals, inputbuf, whitespaces=whitespaces)
+    assert lexer1.terminals == terminals
+
+    tokens = list(lexer1)
+
+    assert ''.join(map(lambda x: x.content,
+                       tokens[:-1])) == re.sub(f"[{whitespaces}]", "", input)
+
+    true_token_types = [0, 0, 1, 1]
+    assert [x.type for x in tokens
+            ] == [terminals[i] for i in true_token_types] + ['$']
 
 
 @pytest.mark.parametrize("lexerClass", [pyre.PyRELexer, lexer.Lexer])

@@ -29,7 +29,6 @@ class UnexpectedCharacter(Exception):
 
 class UnregisteredTerminal(Exception):
     """Exception thrown when an active terminal passed is unregistered"""
-
     def __init__(self, terminal: str):
         """Initialize the exception with that invalid terminal"""
         self.terminal = terminal
@@ -46,8 +45,10 @@ class BaseLexer:
     pos = lexer.pos
     ```
     """
-
-    def __init__(self, terminals: list[str], inpt: io.RawIOBase):
+    def __init__(self,
+                 terminals: list[str],
+                 inpt: io.RawIOBase,
+                 whitespaces: Optional[str] = None):
         """Initialize lexer with terminals that should be looked for and input
         stream. The order of terminals may imply precedence."""
         assert all([x.startswith('"') for x in terminals]), \
@@ -56,6 +57,7 @@ class BaseLexer:
         # Make a copy of terminals so that original changes are not reflected
         self.terminals = terminals.copy()
         self.input = inpt
+        self.whitespaces = whitespaces
 
     def nextToken(self, terminals: Optional[list[str]] = None) -> Token:
         """Override the nextToken method based on the lexer

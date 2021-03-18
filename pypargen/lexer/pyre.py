@@ -13,10 +13,17 @@ from pypargen.base.lexer import BaseLexer, UnexpectedCharacter,\
 class PyRELexer(BaseLexer):
     """Lexical tokenizer based on re library."""
 
-    def __init__(self, terminals: list[str], inpt: io.RawIOBase):
+    def __init__(self,
+                 terminals: list[str],
+                 inpt: io.RawIOBase,
+                 whitespaces: Optional[str] = None):
         """Initialize lexer with terminals to be looked for and input stream"""
-        super().__init__(terminals, inpt)
+        super().__init__(terminals, inpt, whitespaces)
         self._patterns = {patt: re.compile(patt[1:-1]) for patt in terminals}
+
+        self.ws_pattern = re.compile("")
+        if self.whitespaces:
+            self.ws_pattern = re.compile(f"[{self.whitespaces}]*")
 
         # Read the whole input (No other way to use re)
         self.str = inpt.read()
@@ -28,6 +35,10 @@ class PyRELexer(BaseLexer):
     def nextToken(self, terminals: Optional[list[str]] = None) -> Token:
         if self.stopped:
             raise StopIteration
+
+        # First, skip whitespaces
+        if ws := self.ws_pattern.match(self.str, self.pos):
+            self.pos = ws.end()
 
         # Generate the last token as $
         if self.pos >= len(self.str):
